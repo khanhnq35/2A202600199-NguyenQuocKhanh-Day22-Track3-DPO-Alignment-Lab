@@ -26,6 +26,36 @@ import shutil
 
 print("🚀 Lab 22 DPO Training — Kaggle Version\n")
 
+# ============================================================================
+# INSTALL DEPENDENCIES
+# ============================================================================
+
+print("📦 Installing dependencies (this may take 2-3 minutes)...\n")
+
+import subprocess
+import sys
+
+packages = [
+    "unsloth",
+    "torch",
+    "transformers>=4.46",
+    "trl>=0.12",
+    "peft>=0.13",
+    "accelerate>=1.1",
+    "bitsandbytes>=0.44",
+    "datasets>=3.1",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "matplotlib>=3.9",
+]
+
+for package in packages:
+    print(f"  Installing {package}...", end=" ", flush=True)
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", package])
+    print("✓")
+
+print("\n✅ All dependencies installed!\n")
+
 # Detect GPU
 import torch
 assert torch.cuda.is_available(), "Kaggle GPU not enabled. Enable Accelerator: T4 GPU"
