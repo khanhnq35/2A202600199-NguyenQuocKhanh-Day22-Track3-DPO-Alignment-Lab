@@ -139,13 +139,21 @@ def run_sft_training():
 
     # Load data
     print("Loading Vietnamese Alpaca dataset...")
-    ds = load_dataset("5CD-AI/Vietnamese-alpaca-cleaned", split="train[:1000]")
+    ds = load_dataset("5CD-AI/Vietnamese-alpaca-gpt4-gg-translated", split="train[:1000]")
 
-    # Format
+    # Format - handle different column names
     def format_chat(example):
-        return {
-            "text": f"### Instruction:\n{example['instruction']}\n### Input:\n{example['input']}\n### Output:\n{example['output']}"
-        }
+        # Try different column names
+        instruction = example.get('instruction', example.get('prompt', ''))
+        input_text = example.get('input', '')
+        output_text = example.get('output', example.get('response', ''))
+
+        if input_text:
+            text = f"### Instruction:\n{instruction}\n### Input:\n{input_text}\n### Output:\n{output_text}"
+        else:
+            text = f"### Instruction:\n{instruction}\n### Output:\n{output_text}"
+
+        return {"text": text}
 
     ds = ds.map(format_chat, remove_columns=list(ds.column_names))
     ds = ds.train_test_split(test_size=0.1)
