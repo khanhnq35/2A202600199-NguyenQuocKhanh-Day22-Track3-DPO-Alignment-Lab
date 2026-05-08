@@ -141,17 +141,16 @@ def run_sft_training():
     print("Loading Vietnamese Alpaca dataset...")
     ds = load_dataset("5CD-AI/Vietnamese-alpaca-gpt4-gg-translated", split="train[:1000]")
 
-    # Format - handle different column names
+    # Format - use actual Vietnamese columns
     def format_chat(example):
-        # Try different column names
-        instruction = example.get('instruction', example.get('prompt', ''))
-        input_text = example.get('input', '')
-        output_text = example.get('output', example.get('response', ''))
+        instruction_vi = example.get('instruction_vi', '')
+        input_vi = example.get('input_vi', '')
+        output_vi = example.get('output_vi', '')
 
-        if input_text:
-            text = f"### Instruction:\n{instruction}\n### Input:\n{input_text}\n### Output:\n{output_text}"
+        if input_vi and input_vi.strip():
+            text = f"### Instruction:\n{instruction_vi}\n### Input:\n{input_vi}\n### Output:\n{output_vi}"
         else:
-            text = f"### Instruction:\n{instruction}\n### Output:\n{output_text}"
+            text = f"### Instruction:\n{instruction_vi}\n### Output:\n{output_vi}"
 
         return {"text": text}
 
