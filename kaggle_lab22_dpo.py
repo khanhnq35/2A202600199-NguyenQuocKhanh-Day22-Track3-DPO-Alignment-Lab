@@ -314,6 +314,7 @@ def evaluate_models():
     from unsloth import FastLanguageModel
     from peft import PeftModel
     import pandas as pd
+    import torch
 
     # Test prompts
     prompts = [
@@ -347,6 +348,10 @@ def evaluate_models():
                 output = model.generate(**inputs, max_new_tokens=128, temperature=0.7)
             text = tokenizer.decode(output[0], skip_special_tokens=True)
             outputs.append(text[len(prompt):].strip())
+
+        # Cleanup to avoid OOM
+        del model
+        torch.cuda.empty_cache()
 
         return outputs
 
@@ -451,6 +456,8 @@ def main():
         )
         from peft import PeftModel
         sft_model = PeftModel.from_pretrained(sft_model, str(SFT_PATH))
+        # Prepare model for training
+        FastLanguageModel.for_training(sft_model)
 
     # NB2: Preference Data
     if not PREF_PATH.exists():
