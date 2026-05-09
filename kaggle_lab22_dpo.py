@@ -130,11 +130,23 @@ def run_sft_training():
     from trl import SFTTrainer
     import torch
 
-    # Load model
+    # Load model + setup LoRA adapter
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=BASE_MODEL,
         max_seq_length=MAX_LEN,
         load_in_4bit=True,
+    )
+
+    # Add LoRA adapter (required for 4-bit quantized models)
+    model = FastLanguageModel.get_peft_model(
+        model,
+        r=16,
+        lora_alpha=32,
+        lora_dropout=0.05,
+        bias="none",
+        use_gradient_checkpointing="unsloth",
+        use_rslora=False,
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
     )
 
     # Load data
